@@ -4,7 +4,7 @@ This connector builds connections to its various end points.
 
 ## Pre-requisites
 You will need the following to proceed:
-- A Power Automate plan
+- A Power Automate plan, with access to Premium connectors
 - A Notify account
 
 ## Getting Credentials
@@ -27,6 +27,8 @@ When creating a connection with this connector, copy the full API key (of the fo
 - Get the PDF of a letter notification
 - Get the details of one (or more) templates
 - Get the details of received messages
+
+![image](https://github.com/user-attachments/assets/8f6756bd-db4b-42aa-9f86-9bec4de0d503)
 
 ## Documentation
 The Notify API is documented [here](https://docs.notifications.service.gov.uk/rest-api.html).
