@@ -1,0 +1,1385 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "GOVUK Notify",
+    "description": "A connector for the GOV.UK Notify messaging service",
+    "version": "1.0"
+  },
+  "host": "api.notifications.service.gov.uk",
+  "basePath": "/v2/",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [],
+  "produces": [
+    "application/pdf"
+  ],
+  "paths": {
+    "/notifications/sms": {
+      "post": {
+        "responses": {
+          "201": {
+            "description": "default",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/ResponseSuccess"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "type": "object",
+                      "properties": {
+                        "body": {
+                          "type": "string",
+                          "description": "The body of the message"
+                        },
+                        "from_number": {
+                          "type": "string",
+                          "description": "The number the text message was sent from"
+                        }
+                      },
+                      "description": "The content of the message"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "403": {
+            "description": "Auth Error",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "429": {
+            "description": "Rate Limited",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          }
+        },
+        "summary": "Send a text message",
+        "description": "Action to send a text message using the GOV.UK Notify",
+        "operationId": "SendSMS",
+        "x-ms-visibility": "advanced",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "template_id": {
+                  "type": "string",
+                  "description": "The template to use for the message",
+                  "title": "Template ID",
+                  "x-ms-visibility": "important",
+                  "x-ms-dynamic-values": {
+                    "operationId": "GetTemplates",
+                    "parameters": {
+                      "type": "sms"
+                    },
+                    "value-path": "id",
+                    "value-collection": "templates",
+                    "value-title": "name"
+                  }
+                },
+                "reference": {
+                  "type": "string",
+                  "description": "A reference for this notification or batch of notifcations",
+                  "title": "Reference",
+                  "x-ms-visibility": "advanced"
+                },
+                "personalisation": {
+                  "type": "object",
+                  "description": "The personalisation to be included in the message. This should be a valid JSON object containing the properties required for the template.",
+                  "title": "Personalisation",
+                  "x-ms-visibility": "important"
+                },
+                "phone_number": {
+                  "type": "string",
+                  "description": "The phone number the message will be sent to",
+                  "title": "Phone number",
+                  "x-ms-visibility": "important"
+                },
+                "sms_sender_id": {
+                  "type": "string",
+                  "description": "A GUID for the text message sender to use",
+                  "title": "SMS Sender ID",
+                  "x-ms-visibility": "advanced"
+                }
+              },
+              "required": [
+                "template_id",
+                "phone_number"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/notifications/email": {
+      "post": {
+        "responses": {
+          "201": {
+            "description": "default",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/ResponseSuccess"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "type": "object",
+                      "properties": {
+                        "body": {
+                          "type": "string",
+                          "description": "The body of the message"
+                        },
+                        "from_email": {
+                          "type": "string",
+                          "description": "The email the email message was sent from"
+                        },
+                        "subject": {
+                          "type": "string",
+                          "description": "The subject of the email"
+                        },
+                        "one_click_unsubscribe_url": {
+                          "type": "string",
+                          "description": "A URL that allows the recipient to unsubscribe"
+                        }
+                      },
+                      "description": "The content of the message"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "403": {
+            "description": "Auth Error",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "429": {
+            "description": "Rate Limited",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          }
+        },
+        "summary": "Send an email",
+        "description": "Action to send an email message using the GOV.UK Notify",
+        "operationId": "SendEmail",
+        "x-ms-visibility": "advanced",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "template_id": {
+                  "type": "string",
+                  "description": "The template to use for the message",
+                  "title": "Template ID",
+                  "x-ms-visibility": "important",
+                  "x-ms-dynamic-values": {
+                    "operationId": "GetTemplates",
+                    "parameters": {
+                      "type": "email"
+                    },
+                    "value-path": "id",
+                    "value-collection": "templates",
+                    "value-title": "name"
+                  }
+                },
+                "reference": {
+                  "type": "string",
+                  "description": "A reference for this notification or batch of notifcations",
+                  "title": "Reference",
+                  "x-ms-visibility": "advanced"
+                },
+                "personalisation": {
+                  "type": "object",
+                  "description": "The personalisation to be included in the message. This should be a valid JSON object containing the properties required for the template.",
+                  "title": "Personalisation",
+                  "x-ms-visibility": "important"
+                },
+                "email_address": {
+                  "type": "string",
+                  "description": "The email address the message will be sent to",
+                  "title": "Email address",
+                  "x-ms-visibility": "important"
+                },
+                "email_reply_to_id": {
+                  "type": "string",
+                  "description": "A GUID for the reply to email to use",
+                  "title": "Reply To Email ID",
+                  "x-ms-visibility": "advanced"
+                }
+              },
+              "required": [
+                "template_id",
+                "email_address"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/notifications/letter": {
+      "post": {
+        "responses": {
+          "201": {
+            "description": "default",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/ResponseSuccess"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "type": "object",
+                      "properties": {
+                        "body": {
+                          "type": "string",
+                          "description": "The body of the message",
+                          "title": "Message Body"
+                        },
+                        "subject": {
+                          "type": "string",
+                          "description": "The subject of the letter",
+                          "title": "Message Subject"
+                        }
+                      },
+                      "description": "The content of the message",
+                      "title": "Message Content"
+                    },
+                    "postage": {
+                      "type": "string",
+                      "description": "The postage class the letter was sent via",
+                      "title": "Postage"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "403": {
+            "description": "Auth Error",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "429": {
+            "description": "Rate Limited",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          }
+        },
+        "summary": "Send a letter",
+        "description": "Action to send a letter using the GOV.UK Notify",
+        "operationId": "SendLetter",
+        "x-ms-visibility": "advanced",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "template_id": {
+                  "type": "string",
+                  "description": "The template to use for the message",
+                  "title": "Template ID",
+                  "x-ms-visibility": "important",
+                  "x-ms-dynamic-values": {
+                    "operationId": "GetTemplates",
+                    "parameters": {
+                      "type": "letter"
+                    },
+                    "value-path": "id",
+                    "value-collection": "templates",
+                    "value-title": "name"
+                  }
+                },
+                "reference": {
+                  "type": "string",
+                  "description": "A reference for this notification or batch of notifcations",
+                  "title": "Reference",
+                  "x-ms-visibility": "advanced"
+                },
+                "personalisation": {
+                  "type": "object",
+                  "description": "The personalisation to be included in the message. This should be a valid JSON object containing the properties required for the template.",
+                  "title": "Personalisation",
+                  "x-ms-visibility": "important"
+                },
+                "content": {
+                  "type": "string",
+                  "format": "byte",
+                  "description": "If sending a pre-compiled letter, this is the base64 encoded version of the PDF letter",
+                  "x-ms-visibility": "advanced",
+                  "title": "Content"
+                },
+                "postage": {
+                  "type": "string",
+                  "description": "A precompiled letter can be sent via first or second class post only.",
+                  "enum": [
+                    "",
+                    "first",
+                    "second"
+                  ],
+                  "x-ms-visibility": "advanced",
+                  "title": "Postage"
+                }
+              },
+              "required": [
+                "template_id",
+                "personalisation"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/template/{template_id}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "$ref": "#/definitions/Template"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "403": {
+            "description": "Auth Error",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "429": {
+            "description": "Rate Limited",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          }
+        },
+        "summary": "Get a template by ID",
+        "description": "Action to retrieve a specified template, using the ID, from GOV.UK Notify",
+        "operationId": "GetTemplateById",
+        "parameters": [
+          {
+            "$ref": "#/parameters/template_id"
+          }
+        ],
+        "x-ms-visibility": "internal"
+      }
+    },
+    "/templates": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "templates": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Template"
+                  },
+                  "description": "templates"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "403": {
+            "description": "Auth Error",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "429": {
+            "description": "Rate Limited",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          }
+        },
+        "summary": "Get all templates",
+        "description": "Action to retrieve all templates available from GOV.UK Notify for the specified service",
+        "operationId": "GetTemplates",
+        "parameters": [
+          {
+            "$ref": "#/parameters/type"
+          }
+        ],
+        "x-ms-visibility": "internal"
+      }
+    },
+    "/template/{template_id}/version/{version}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "success",
+            "schema": {
+              "$ref": "#/definitions/Template"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "403": {
+            "description": "Auth Error",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "429": {
+            "description": "Rate Limited",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          }
+        },
+        "summary": "Get a template version by ID",
+        "description": "Action to retrieve a specified template version, using the ID, from GOV.UK Notify",
+        "operationId": "GetTemplateByIdByVersion",
+        "parameters": [
+          {
+            "$ref": "#/parameters/template_id"
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "type": "number",
+            "x-ms-visibility": "important",
+            "description": "The version number of the the specified template to retrieve",
+            "x-ms-summary": "The version number"
+          }
+        ],
+        "x-ms-visibility": "internal"
+      }
+    },
+    "/notifications/{notification_id}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "default",
+            "schema": {
+              "$ref": "#/definitions/MessageResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "403": {
+            "description": "Auth Error",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "404": {
+            "description": "NoResultFound",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          }
+        },
+        "summary": "Get the status of a single notification",
+        "operationId": "GetNotificationById",
+        "description": "Get the status of a notification by ID",
+        "x-ms-visibility": "advanced",
+        "parameters": [
+          {
+            "$ref": "#/parameters/template_type"
+          },
+          {
+            "$ref": "#/parameters/status"
+          },
+          {
+            "$ref": "#/parameters/reference"
+          },
+          {
+            "$ref": "#/parameters/older_than"
+          },
+          {
+            "$ref": "#/parameters/include_jobs"
+          },
+          {
+            "name": "notification_id",
+            "in": "path",
+            "type": "string",
+            "required": true,
+            "description": "The notification ID we are looking for",
+            "x-ms-summary": "The notification ID"
+          }
+        ]
+      }
+    },
+    "/notifications/{notification_id}/pdf": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "string",
+              "format": "binary"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "403": {
+            "description": "Auth Error",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "404": {
+            "description": "NoResultFound",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          }
+        },
+        "summary": "Get the PDF version of a single notification",
+        "operationId": "GetNotificationPDF",
+        "description": "Get the PDF version of a single notification",
+        "x-ms-visibility": "advanced",
+        "parameters": [
+          {
+            "name": "notification_id",
+            "in": "path",
+            "type": "string",
+            "required": true,
+            "description": "The notification ID we are looking for",
+            "x-ms-summary": "The notification ID"
+          }
+        ]
+      }
+    },
+    "/notifications": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "default",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "notifications": {
+                  "title": "Messages",
+                  "description": "An array of the messages returned",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/MessageResponse"
+                  }
+                },
+                "links": {
+                  "title": "Paging links",
+                  "description": "Links to enable pagination of the query",
+                  "type": "object",
+                  "properties": {
+                    "current": {
+                      "type": "string",
+                      "description": "The URI for this query response",
+                      "title": "Current page"
+                    },
+                    "next": {
+                      "type": "string",
+                      "title": "Next page",
+                      "description": "The URI for the next page of this query, if this query returned more than 250 records."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "403": {
+            "description": "Auth Error",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "404": {
+            "description": "NoResultFound",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          }
+        },
+        "summary": "Get the status of multiple notifications",
+        "operationId": "GetNotifications",
+        "description": "Get the status of multiple notifications, returning a maximum of 250 records.",
+        "x-ms-visibility": "advanced",
+        "parameters": [
+          {
+            "$ref": "#/parameters/template_type"
+          },
+          {
+            "$ref": "#/parameters/status"
+          },
+          {
+            "$ref": "#/parameters/reference"
+          },
+          {
+            "$ref": "#/parameters/older_than"
+          },
+          {
+            "$ref": "#/parameters/include_jobs"
+          }
+        ]
+      }
+    },
+    "/template/{template_id}/preview": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "default",
+            "schema": {
+              "$ref": "#/definitions/Preview"
+            }
+          }
+        },
+        "summary": "Generate a template preview",
+        "description": "Generate a preview of a template with appropriate personalisation",
+        "operationId": "GeneratePreview",
+        "x-ms-visibility": "advanced",
+        "parameters": [
+          {
+            "name": "template_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the template to preview",
+            "x-ms-summary": "Template ID",
+            "x-ms-visibility": "important",
+            "x-ms-dynamic-values": {
+              "operationId": "GetTemplates",
+              "value-path": "id",
+              "value-collection": "templates",
+              "value-title": "name"
+            }
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": false,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "personalisation": {
+                  "type": "object",
+                  "properties": {},
+                  "description": "personalisation",
+                  "title": "Personalisation"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/received-text-messages": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "default",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "received_text_messages": {
+                  "title": "Messages",
+                  "description": "An array of the messages returned",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The ID of the message",
+                        "title": "Message ID"
+                      },
+                      "created_at": {
+                        "type": "string",
+                        "description": "The date and time the message was created",
+                        "title": "Created at"
+                      },
+                      "service_id": {
+                        "type": "string",
+                        "description": "The service id the message was received by",
+                        "title": "Service ID"
+                      },
+                      "notify_number": {
+                        "type": "string",
+                        "description": "The number the message was sent to",
+                        "title": "Notify Number"
+                      },
+                      "user_number": {
+                        "type": "string",
+                        "description": "The number the message was sent from",
+                        "title": "User Number"
+                      },
+                      "content": {
+                        "type": "string",
+                        "description": "The content of the message",
+                        "title": "Content"
+                      }
+                    }
+                  }
+                },
+                "links": {
+                  "title": "Paging links",
+                  "description": "Links to enable pagination of the query",
+                  "type": "object",
+                  "properties": {
+                    "current": {
+                      "type": "string",
+                      "description": "The URI for this query response",
+                      "title": "Current page"
+                    },
+                    "next": {
+                      "type": "string",
+                      "title": "Next page",
+                      "description": "The URI for the next page of this query, if this query returned more than 250 records."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "403": {
+            "description": "Auth Error",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "404": {
+            "description": "NoResultFound",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ResponseError"
+            }
+          }
+        },
+        "summary": "Get multiple received text messages",
+        "operationId": "GetReceivedMessages",
+        "description": "Get multiple received messages, returning 250 at a time",
+        "x-ms-visibility": "advanced",
+        "parameters": [
+          {
+            "$ref": "#/parameters/older_than"
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "MessageResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Required - notification ID",
+          "title": "ID",
+          "example": "740e5834-3a29-46b4-9a6f-16142fde533a"
+        },
+        "reference": {
+          "type": "string",
+          "description": "Optional reference for the messages",
+          "title": "Reference",
+          "example": "STRING"
+        },
+        "email_address": {
+          "type": "string",
+          "description": "The email the message was sent to",
+          "title": "Email address",
+          "example": "sender@something.com"
+        },
+        "phone_number": {
+          "type": "string",
+          "description": "The phone number the message was sent to",
+          "title": "Phone number",
+          "example": 447900900123
+        },
+        "line_1": {
+          "type": "string",
+          "description": "Required for letter",
+          "title": "Address Line 1",
+          "example": "ADDRESS LINE 1"
+        },
+        "line_2": {
+          "type": "string",
+          "description": "Required for letter",
+          "title": "Address Line 2",
+          "example": "ADDRESS LINE 2"
+        },
+        "line_3": {
+          "type": "string",
+          "description": "Required for letter",
+          "title": "Address Line 3",
+          "example": "ADDRESS LINE 3"
+        },
+        "line_4": {
+          "type": "string",
+          "title": "Address Line 4",
+          "description": "Required for letter",
+          "example": "ADDRESS LINE 4"
+        },
+        "line_5": {
+          "type": "string",
+          "title": "Address Line 5",
+          "description": "Required for letter",
+          "example": "ADDRESS LINE 5"
+        },
+        "line_6": {
+          "type": "string",
+          "title": "Address Line 6",
+          "description": "Required for letter",
+          "example": "ADDRESS LINE 6"
+        },
+        "line_7": {
+          "type": "string",
+          "title": "Address Line 7",
+          "description": "Required for letter",
+          "example": "NW1 2TZ"
+        },
+        "postage": {
+          "type": "string",
+          "title": "Postage",
+          "description": "Required for letter",
+          "enum": [
+            "first second europe rest-of-world"
+          ],
+          "example": "first / second / europe / rest-of-world"
+        },
+        "type": {
+          "type": "string",
+          "title": "Message Type",
+          "description": "Required",
+          "enum": [
+            "sms letter email"
+          ],
+          "example": "sms / letter / email"
+        },
+        "status": {
+          "type": "string",
+          "title": "Message Status",
+          "description": "Required",
+          "example": "sending / delivered / permanent-failure / temporary-failure / technical-failure"
+        },
+        "template": {
+          "type": "object",
+          "title": "Template",
+          "description": "The template that was used for this message",
+          "properties": {
+            "id": {
+              "type": "string",
+              "title": "Template ID",
+              "description": "The template ID for this message",
+              "example": "f33517ff-2a88-4f6e-b855-c550268ce08a"
+            },
+            "version": {
+              "type": "number",
+              "title": "Template Version",
+              "description": "The template version",
+              "example": 1
+            },
+            "uri": {
+              "type": "string",
+              "title": "Template URI",
+              "description": "The template URI",
+              "example": "/v2/template/id/version"
+            }
+          }
+        },
+        "body": {
+          "type": "string",
+          "title": "Body",
+          "description": "Message body",
+          "example": "STRING"
+        },
+        "subject": {
+          "type": "string",
+          "title": "Subject",
+          "description": "The message subject",
+          "example": "STRING"
+        },
+        "created_at": {
+          "type": "string",
+          "title": "Created At",
+          "description": "Required - date and time notification created",
+          "example": "2024-05-17T15:58:38.342Z"
+        },
+        "created_by_name": {
+          "type": "string",
+          "title": "Created By",
+          "description": "Optional - name of the person who sent the notification if sent manually",
+          "example": "STRING"
+        },
+        "sent_at": {
+          "type": "string",
+          "title": "Sent At",
+          "description": "Optional - date and time notification sent to provider",
+          "example": "2024-05-17T15:58:30.143Z"
+        },
+        "completed_at": {
+          "title": "Completed At",
+          "type": "string",
+          "description": "Optional - date and time notification delivered or failed",
+          "example": "2024-05-17T15:59:10.321Z"
+        },
+        "scheduled_for": {
+          "title": "Scheduled for",
+          "type": "string",
+          "description": "Optional - date and time notification has been scheduled to be sent at",
+          "example": "2024-05-17T09:00:00.000Z"
+        },
+        "one_click_unsubscribe_url": {
+          "type": "string",
+          "title": "Unsubscribe URL",
+          "description": "Optional - URL that you provided so your recipients can unsubscribe",
+          "example": "STRING"
+        },
+        "is_cost_data_ready": {
+          "type": "boolean",
+          "title": "Cost data ready",
+          "description": "true if cost data is ready and false if it isn't",
+          "example": true
+        },
+        "cost_in_pounds": {
+          "type": "number",
+          "title": "Cost, in £",
+          "format": "float",
+          "description": "Optional - cost of the notification in pounds. The cost does not take free allowance into account",
+          "example": 0.0027
+        }
+      }
+    },
+    "Template": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "string",
+          "description": "The body of the template",
+          "title": "Body"
+        },
+        "created_at": {
+          "type": "string",
+          "description": "The date the template was created",
+          "title": "Created On"
+        },
+        "created_by": {
+          "type": "string",
+          "description": "The user the template was created by",
+          "title": "Created By"
+        },
+        "id": {
+          "type": "string",
+          "description": "The GUID of the template",
+          "title": "ID"
+        },
+        "letter_contact_block": {
+          "type": "string",
+          "description": "If a letter, the sender's address",
+          "title": "Sender address"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the template",
+          "title": "Name"
+        },
+        "personalisation": {
+          "type": "object",
+          "description": "Any personalisation for the template",
+          "title": "Personalisation"
+        },
+        "postage": {
+          "type": "string",
+          "description": "If a letter, the postage class it was sent by",
+          "title": "Postage"
+        },
+        "subject": {
+          "type": "string",
+          "description": "The subject of the template",
+          "title": "Subject"
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of message the template is for",
+          "title": "Message Type"
+        },
+        "updated_at": {
+          "type": "string",
+          "description": "When was this template last updated",
+          "title": "Last Updated"
+        },
+        "version": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The version of the template",
+          "title": "Version"
+        }
+      }
+    },
+    "ResponseError": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The HTTP status code",
+          "title": "Status Code"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "string",
+                "description": "The error summary",
+                "title": "Error"
+              },
+              "message": {
+                "type": "string",
+                "description": "The error message",
+                "title": "Message"
+              }
+            }
+          },
+          "description": "An array of errors",
+          "title": "Errors"
+        }
+      }
+    },
+    "ResponseSuccess": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The ID of the message",
+          "title": "Message ID"
+        },
+        "reference": {
+          "type": "string",
+          "description": "The reference of the message, if included",
+          "title": "Message reference"
+        },
+        "uri": {
+          "type": "string",
+          "description": "The URI of the message",
+          "title": "Message URI"
+        },
+        "template": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The GUID of the template",
+              "title": "Template ID"
+            },
+            "version": {
+              "type": "integer",
+              "format": "int32",
+              "description": "The version of the template",
+              "title": "Template version"
+            },
+            "uri": {
+              "type": "string",
+              "description": "The URI of the template",
+              "title": "Template URI"
+            }
+          },
+          "description": "The template that was used for this message",
+          "title": "Template"
+        },
+        "scheduled_for": {
+          "type": "string",
+          "description": "When the message was scheduled to be sent",
+          "title": "Scheduled For"
+        }
+      }
+    },
+    "Preview": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The ID of the template being previewed",
+          "title": "Template ID"
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of the message",
+          "title": "Template type"
+        },
+        "version": {
+          "type": "string",
+          "format": "int32",
+          "description": "The version of the template used",
+          "title": "Version"
+        },
+        "body": {
+          "type": "string",
+          "description": "The body of the preview",
+          "title": "Body"
+        },
+        "subject": {
+          "type": "string",
+          "description": "The subject of the preview",
+          "title": "Subject"
+        }
+      }
+    }
+  },
+  "parameters": {
+    "template_type": {
+      "name": "template_type",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "x-ms-visibility": "advanced",
+      "x-ms-summary": "Template Type",
+      "description": "The type of template the messages were created from",
+      "enum": [
+        "email",
+        "letter",
+        "sms"
+      ]
+    },
+    "include_jobs": {
+      "name": "include_jobs",
+      "in": "query",
+      "required": false,
+      "type": "boolean",
+      "description": "Should batch jobs be included in those messages returned?",
+      "x-ms-summary": "Include Batch Jobs",
+      "x-ms-visibility": "advanced"
+    },
+    "older_than": {
+      "name": "older_than",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "description": "Retrieve messages older than the specified message. Must be a message GUID.",
+      "x-ms-summary": "Older than",
+      "x-ms-visibility": "advanced"
+    },
+    "status": {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "description": "The status of the messages to retrieve",
+      "x-ms-summary": "Status",
+      "x-ms-visibility": "advanced",
+      "enum": [
+        "accepted",
+        "created",
+        "sending",
+        "pending",
+        "sent",
+        "received",
+        "delivered",
+        "cancelled",
+        "pending-virus-check",
+        "virus-scan-failed",
+        "validation-failed",
+        "permanent-failure",
+        "temporary-failure",
+        "technical-failure"
+      ]
+    },
+    "reference": {
+      "name": "reference",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "description": "The reference for the messages to retrieve",
+      "x-ms-summary": "Reference",
+      "x-ms-visibility": "advanced"
+    },
+    "template_id": {
+      "name": "template_id",
+      "in": "path",
+      "required": true,
+      "type": "string",
+      "x-ms-visibility": "important",
+      "description": "The template ID that we want to get the details of",
+      "x-ms-summary": "The template ID",
+      "x-ms-dynamic-values": {
+        "operationId": "GetTemplates",
+        "value-path": "id",
+        "value-collection": "templates",
+        "value-title": "name"
+      }
+    },
+    "type": {
+      "name": "type",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "enum": [
+        "sms",
+        "email",
+        "letter"
+      ],
+      "x-ms-visibility": "important",
+      "description": "The type of the templates we are interested in",
+      "x-ms-summary": "The template type"
+    },
+    "type_path": {
+      "name": "type",
+      "in": "path",
+      "required": true,
+      "type": "string",
+      "enum": [
+        "sms",
+        "email",
+        "letter"
+      ],
+      "x-ms-visibility": "important",
+      "description": "The type of the message we want to send",
+      "x-ms-summary": "The message type"
+    }
+  },
+  "responses": {},
+  "securityDefinitions": {
+    "api_key": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "notify_token"
+    }
+  },
+  "security": [
+    {
+      "api_key": []
+    }
+  ],
+  "tags": []
+}
